@@ -1,4 +1,7 @@
 Summarized all my analysis scripts
-For Unpol proposal:    Elastic runs for unpolarized proposal files are in separate rep, on Duke machine
+For Unpol proposal:    
+   Elastic runs for unpolarized proposal files are in separate rep elastic_xs, on Duke machine
 
-   DIS are on JLab machine, used in shuo_solid/DIS. Here under DIS directory. 
+   DIS are on JLab machine, used in shuo_solid/DIS. Here under DIS directory.
+
+   For Acceptance study, on Duke machine

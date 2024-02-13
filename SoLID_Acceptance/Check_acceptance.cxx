@@ -1,0 +1,1 @@
+void Check_acceptance(){}

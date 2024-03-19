@@ -60,10 +60,12 @@ void analysis(std::string file_name="file_name"){
 
     ROOT::RDataFrame d_raw("T",file_name);
     std::cout<<"raw counts"<<*d_raw.Count()<<std::endl;
-    auto d_cut = d_raw
+    auto d_nocut = d_raw
     //.Define("theta_deg",,{"theta"})
     .Define("hadron_P",hadron_momentum,{"px","py","pz"})
     .Define("momentum","sqrt(hadron_P.Dot(hadron_P))")
+    ;
+    auto d_cut = d_nocut
     .Filter("W>2")
     .Filter("Q2>1")
     ;
@@ -87,15 +89,51 @@ void analysis(std::string file_name="file_name"){
     h_momentum->GetYaxis()->SetTitle("rate(Hz)");
     h_momentum->DrawCopy("hist");
     c_momentum->SaveAs("momentum.pdf");
+    auto h_theta_momentum_raw = d_nocut.Histo2D({"","",100,0,7,100,0,30},"momentum","theta","rate");
+    gStyle->SetOptStat(0);
+    TCanvas *c_theta_momentum_raw = new TCanvas();
+    c_theta_momentum_raw->SetRightMargin(0.1);
+    c_theta_momentum_raw->SetLeftMargin(0.15);
+    c_theta_momentum_raw->SetBottomMargin(0.15);
+    //h_theta_momentum->GetXaxis()->SetRangeUser(5,10);
+    h_theta_momentum_raw->GetYaxis()->SetRangeUser(5,25);
+    h_theta_momentum_raw->GetXaxis()->SetTitleSize(0.05);
+    h_theta_momentum_raw->GetYaxis()->SetTitleSize(0.05);
+    h_theta_momentum_raw->GetXaxis()->SetTitle("momentum (GeV/c)");
+    h_theta_momentum_raw->GetYaxis()->SetTitle("#theta (deg)");
+    h_theta_momentum_raw->DrawCopy("colz");
+    c_theta_momentum_raw->SaveAs("theta_momentum_raw.pdf");
+
     auto h_theta_momentum = d_cut.Histo2D({"","",100,0,7,100,0,30},"momentum","theta","rate");
     gStyle->SetOptStat(0);
     TCanvas *c_theta_momentum = new TCanvas();
+    c_theta_momentum->SetRightMargin(0.1);
+    c_theta_momentum->SetLeftMargin(0.15);
+    c_theta_momentum->SetBottomMargin(0.15);
     //h_theta_momentum->GetXaxis()->SetRangeUser(5,10);
-    h_theta_momentum->GetYaxis()->SetRangeUser(14,25);
+    //h_theta_momentum->GetYaxis()->SetRangeUser(14,25);
+    h_theta_momentum->GetXaxis()->SetTitleSize(0.05);
+    h_theta_momentum->GetYaxis()->SetTitleSize(0.05);
     h_theta_momentum->GetXaxis()->SetTitle("momentum (GeV/c)");
     h_theta_momentum->GetYaxis()->SetTitle("#theta (deg)");
     h_theta_momentum->DrawCopy("colz");
     c_theta_momentum->SaveAs("theta_momentum.pdf");
+    
+    auto h_theta_momentum_langle = d_cut.Histo2D({"","",100,0,7,100,0,30},"momentum","theta","rate");
+    gStyle->SetOptStat(0);
+    TCanvas *c_theta_momentum_langle = new TCanvas();
+    c_theta_momentum_langle->SetRightMargin(0.1);
+    c_theta_momentum_langle->SetLeftMargin(0.15);
+    c_theta_momentum_langle->SetBottomMargin(0.15);
+    //h_theta_momentum_langle->GetXaxis()->SetRangeUser(5,10);
+    h_theta_momentum_langle->GetYaxis()->SetRangeUser(14,25);
+    h_theta_momentum_langle->GetXaxis()->SetTitleSize(0.05);
+    h_theta_momentum_langle->GetYaxis()->SetTitleSize(0.05);
+    h_theta_momentum_langle->GetXaxis()->SetTitle("momentum (GeV/c)");
+    h_theta_momentum_langle->GetYaxis()->SetTitle("#theta (deg)");
+    h_theta_momentum_langle->DrawCopy("colz");
+    c_theta_momentum_langle->SaveAs("theta_momentum.pdf");
+    
     TCanvas *c_Q2_x = new TCanvas();
     auto h_Q2_x=d_cut.Histo2D({"","",100,0,1,100,0,10},"x","Q2","rate");
     //h_Q2_x->GetXaxis()->SetRangeUser(5,10);

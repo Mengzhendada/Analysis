@@ -99,19 +99,28 @@ void analysis_all(){
     .Filter("Q2>1")
     ;
     //std::cout<<"counts after cuts"<<*d_cut.Count()<<std::endl;
-    //TH1* h_theta = new TH1("","",100,0,30);
+    TH1D* h_theta_ave = new TH1D("","",100,0,30);
     auto h_theta_CT14NLO = d_cut_CT14NLO.Histo1D({"CT14NLO","",100,0,30},"theta","rate");
     auto h_theta_CT14LO = d_cut_CT14LO.Histo1D({"CT14LO","",100,0,30},"theta","rate");
     auto h_theta_CT18NLO = d_cut_CT18NLO.Histo1D({"CT18NLO","",100,0,30},"theta","rate");
     auto h_theta_CT18LO = d_cut_CT18LO.Histo1D({"CT18LO","",100,0,30},"theta","rate");
     auto h_theta_CJ15NLO = d_cut_CJ15NLO.Histo1D({"CJ15NLO","",100,0,30},"theta","rate");
+    
     //std::cout<<" counts from histo" <<h_theta->Integral()<<std::endl;
     gStyle->SetOptTitle(0);
     gStyle->SetOptStat(0);
+    gStyle->SetTitleFontSize(.1);
+    gStyle->SetLabelSize(.07,"XY");
+    
     TCanvas *c_theta = new TCanvas();
+    c_theta->SetRightMargin(0.1);
+    c_theta->SetLeftMargin(0.15);
+    c_theta->SetBottomMargin(0.15);
     h_theta_CT14NLO->GetXaxis()->SetRange(35,75);
     h_theta_CT14NLO->GetXaxis()->SetTitle("#theta (deg)");
     h_theta_CT14NLO->GetYaxis()->SetTitle("rate(Hz)");
+    h_theta_CT14NLO->GetXaxis()->SetTitleSize(0.05);
+    h_theta_CT14NLO->GetYaxis()->SetTitleSize(0.05);
     h_theta_CT14NLO->SetLineColor(1);
     h_theta_CT14LO->SetLineColor(4);
     h_theta_CT18LO->SetLineColor(2);
@@ -127,9 +136,42 @@ void analysis_all(){
     h_theta_CT18NLO->DrawCopy("hist same");
     h_theta_CT18LO->DrawCopy("hist same");
     h_theta_CJ15NLO->DrawCopy("hist same");
+    //h_theta_ave->SetTitle("average");
+    //h_theta_ave->DrawCopy("hist same");
     c_theta->BuildLegend(0.65,0.65,0.9,0.9);
     c_theta->SaveAs("theta_compare.pdf");
     
+    h_theta_ave->Add(h_theta_CT14NLO.GetPtr());
+    h_theta_ave->Add(h_theta_CT14LO.GetPtr());
+    h_theta_ave->Add(h_theta_CT18LO.GetPtr());
+    h_theta_ave->Add(h_theta_CT18NLO.GetPtr());
+    h_theta_ave->Add(h_theta_CJ15NLO.GetPtr());
+    h_theta_ave->Scale(1/5.0);
+    TCanvas *c_ratio = new TCanvas();
+    TH1D *h_theta_CT14NLO_ratio=(TH1D*)h_theta_CT14NLO->Clone("h_theta_CT14NLO_ratio");
+    h_theta_CT14NLO_ratio->Divide(h_theta_CT14NLO.GetPtr(),h_theta_ave);
+    TH1D *h_theta_CT14LO_ratio=(TH1D*)h_theta_CT14LO->Clone("h_theta_CT14LO_ratio");
+    h_theta_CT14LO_ratio->Divide(h_theta_CT14LO.GetPtr(),h_theta_ave);
+    TH1D *h_theta_CT18NLO_ratio=(TH1D*)h_theta_CT18NLO->Clone("h_theta_CT18NLO_ratio");
+    h_theta_CT18NLO_ratio->Divide(h_theta_CT18NLO.GetPtr(),h_theta_ave);
+    TH1D *h_theta_CT18LO_ratio=(TH1D*)h_theta_CT18LO->Clone("h_theta_CT18LO_ratio");
+    h_theta_CT18LO_ratio->Divide(h_theta_CT18LO.GetPtr(),h_theta_ave);
+    TH1D *h_theta_CJ15NLO_ratio=(TH1D*)h_theta_CJ15NLO->Clone("h_theta_CJ15NLO_ratio");
+    h_theta_CJ15NLO_ratio->Divide(h_theta_CJ15NLO.GetPtr(),h_theta_ave);
+    
+    h_theta_CT14NLO_ratio->SetTitle("CT14NLO");
+    h_theta_CT14LO_ratio->SetTitle("CT14LO");
+    h_theta_CT18NLO_ratio->SetTitle("CT18NLO");
+    h_theta_CT18LO_ratio->SetTitle("CT18LO");
+    h_theta_CJ15NLO_ratio->SetTitle("CJ15NLO");
+    h_theta_CT14NLO_ratio->DrawCopy("L");
+    h_theta_CT14LO_ratio->DrawCopy("L same");
+    h_theta_CT18NLO_ratio->DrawCopy("L same");
+    h_theta_CT18LO_ratio->DrawCopy("L same");
+    h_theta_CJ15NLO_ratio->DrawCopy("L same");
+    c_ratio->BuildLegend();
+    c_ratio->SaveAs("theta_ratio.pdf");
+
     auto h_momentum_CT14NLO = d_cut_CT14NLO.Histo1D({"CT14NLO","",100,0,10},"momentum","rate");
     auto h_momentum_CT14LO = d_cut_CT14LO.Histo1D({"CT14LO","",100,0,10},"momentum","rate");
     auto h_momentum_CT18NLO = d_cut_CT18NLO.Histo1D({"CT18NLO","",100,0,10},"momentum","rate");

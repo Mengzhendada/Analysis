@@ -140,11 +140,18 @@ void analysis_RC_all(){
 
     gStyle->SetOptStat(0);
     gStyle->SetOptTitle(0);
+    gStyle->SetTitleFontSize(.1);
+    gStyle->SetLabelSize(.07,"XY");
     TCanvas *c_theta = new TCanvas();
+    c_theta->SetRightMargin(0.1);
+    c_theta->SetLeftMargin(0.15);
+    c_theta->SetBottomMargin(0.15);
     h_theta_CT14NLO_ratio->GetYaxis()->SetRangeUser(0.8,1.2);
     //h_theta_CT14NLO->GetXaxis()->SetRange(35,75);
     h_theta_CT14NLO_ratio->GetXaxis()->SetTitle("#theta (deg)");
     h_theta_CT14NLO_ratio->GetYaxis()->SetTitle("RC");
+    h_theta_CT14NLO_ratio->GetXaxis()->SetTitleSize(0.05);
+    h_theta_CT14NLO_ratio->GetYaxis()->SetTitleSize(0.05);
     h_theta_CT14NLO_ratio->DrawCopy("L");
     h_theta_CT14LO_ratio->SetLineColor(2);
     h_theta_CT14LO_ratio->DrawCopy("L same");

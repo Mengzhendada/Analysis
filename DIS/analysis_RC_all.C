@@ -39,10 +39,10 @@ bool root_file_exists(std::string rootfile) {
 }
 using Pvec3D = ROOT::Math::XYZVector;
 using Pvec4D = ROOT::Math::PxPyPzMVector;
-//auto p_hadron = [](double px, double py, double pz) {
-//  return Pvec4D{px , py , pz , M_hadron};
+//auto p_particle = [](double px, double py, double pz) {
+//  return Pvec4D{px , py , pz , M_particle};
 //};
-auto hadron_momentum = [](double px,double py,double pz){
+auto particle_momentum = [](double px,double py,double pz){
   TVector3 v(px,py,pz);
   return v;
 };
@@ -58,29 +58,29 @@ void analysis_RC_all(){
     ROOT::RDataFrame d_CJ15NLO("T","DIS/gen_H2_11GeV_5.root");
     auto d_cut_CT14NLO = d_CT14NLO
     //.Define("theta_deg",,{"theta"})
-    .Define("hadron_P",hadron_momentum,{"px","py","pz"})
-    .Define("momentum","sqrt(hadron_P.Dot(hadron_P))")
+    .Define("particle_P",particle_momentum,{"px","py","pz"})
+    .Define("momentum","sqrt(particle_P.Dot(particle_P))")
     .Filter("W>2")
     .Filter("Q2>1")
     ;
     auto d_cut_CT14LO = d_CT14LO
     //.Define("theta_deg",,{"theta"})
-    .Define("hadron_P",hadron_momentum,{"px","py","pz"})
-    .Define("momentum","sqrt(hadron_P.Dot(hadron_P))")
+    .Define("particle_P",particle_momentum,{"px","py","pz"})
+    .Define("momentum","sqrt(particle_P.Dot(particle_P))")
     .Filter("W>2")
     .Filter("Q2>1")
     ;
     auto d_cut_CT18NLO = d_CT18NLO
     //.Define("theta_deg",,{"theta"})
-    .Define("hadron_P",hadron_momentum,{"px","py","pz"})
-    .Define("momentum","sqrt(hadron_P.Dot(hadron_P))")
+    .Define("particle_P",particle_momentum,{"px","py","pz"})
+    .Define("momentum","sqrt(particle_P.Dot(particle_P))")
     .Filter("W>2")
     .Filter("Q2>1")
     ;
     auto d_cut_CT18LO = d_CT18LO
     //.Define("theta_deg",,{"theta"})
-    .Define("hadron_P",hadron_momentum,{"px","py","pz"})
-    .Define("momentum","sqrt(hadron_P.Dot(hadron_P))")
+    .Define("particle_P",particle_momentum,{"px","py","pz"})
+    .Define("momentum","sqrt(particle_P.Dot(particle_P))")
     .Filter("W>2")
     .Filter("Q2>1")
     ;
@@ -92,29 +92,29 @@ void analysis_RC_all(){
     //ROOT::RDataFrame d_RC_CJ15NLO("T","DIS/gen_H2_11GeV_5RC.root");
     auto d_RC_cut_CT14NLO = d_RC_CT14NLO
     //.Define("theta_deg",,{"theta"})
-    .Define("hadron_P",hadron_momentum,{"px","py","pz"})
-    .Define("momentum","sqrt(hadron_P.Dot(hadron_P))")
+    .Define("particle_P",particle_momentum,{"px","py","pz"})
+    .Define("momentum","sqrt(particle_P.Dot(particle_P))")
     .Filter("W>2")
     .Filter("Q2>1")
     ;
     auto d_RC_cut_CT14LO = d_RC_CT14LO
     //.Define("theta_deg",,{"theta"})
-    .Define("hadron_P",hadron_momentum,{"px","py","pz"})
-    .Define("momentum","sqrt(hadron_P.Dot(hadron_P))")
+    .Define("particle_P",particle_momentum,{"px","py","pz"})
+    .Define("momentum","sqrt(particle_P.Dot(particle_P))")
     .Filter("W>2")
     .Filter("Q2>1")
     ;
     //auto d_RC_cut_CT18NLO = d_RC_CT18NLO
     ////.Define("theta_deg",,{"theta"})
-    //.Define("hadron_P",hadron_momentum,{"px","py","pz"})
-    //.Define("momentum","sqrt(hadron_P.Dot(hadron_P))")
+    //.Define("particle_P",particle_momentum,{"px","py","pz"})
+    //.Define("momentum","sqrt(particle_P.Dot(particle_P))")
     //.Filter("W>2")
     //.Filter("Q2>1")
     //;
     //auto d_RC_cut_CT18LO = d_RC_CT18LO
     ////.Define("theta_deg",,{"theta"})
-    //.Define("hadron_P",hadron_momentum,{"px","py","pz"})
-    //.Define("momentum","sqrt(hadron_P.Dot(hadron_P))")
+    //.Define("particle_P",particle_momentum,{"px","py","pz"})
+    //.Define("momentum","sqrt(particle_P.Dot(particle_P))")
     //.Filter("W>2")
     //.Filter("Q2>1")
     //;

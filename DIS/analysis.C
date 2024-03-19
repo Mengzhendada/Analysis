@@ -25,10 +25,10 @@
 
 using Pvec3D = ROOT::Math::XYZVector;
 using Pvec4D = ROOT::Math::PxPyPzMVector;
-//auto p_hadron = [](double px, double py, double pz) {
-//  return Pvec4D{px , py , pz , M_hadron};
+//auto p_particle = [](double px, double py, double pz) {
+//  return Pvec4D{px , py , pz , M_particle};
 //};
-auto hadron_momentum = [](double px,double py,double pz){
+auto particle_momentum = [](double px,double py,double pz){
   TVector3 v(px,py,pz);
   return v;
 };
@@ -50,11 +50,29 @@ bool root_file_exists(std::string rootfile) {
   }
   return false;
 }
+TFile * file_e = new TFile("Acceptance/acceptance_solid_SIDIS_He3_electron_201701_1e7_output_final.root", "r");
+TH2F * acc_FA_e = (TH2F *) file_e->Get("acceptance_ThetaP_forwardangle");
+TH2F * acc_LA_e = (TH2F *) file_e->Get("acceptance_ThetaP_largeangle");
+double thetamin = 8.0;
+double GetAcceptance_e(const TLorentzVector p, const char * detector = "all"){//Get electron acceptance
+  double theta = p.Theta() / M_PI * 180.0;
+  if (theta < thetamin || theta > 30.0) return 0; //theta > 180
+  double mom = p.P();
+  double acc = 0;
+  if (strcmp(detector, "FA") == 0 || strcmp(detector, "all") == 0)
+    acc += acc_FA_e->GetBinContent(acc_FA_e->GetXaxis()->FindBin(theta), acc_FA_e->GetYaxis()->FindBin(mom));
+  if (mom > 3.5 && (strcmp(detector, "LA") == 0 || strcmp(detector, "all") == 0))
+    acc += acc_LA_e->GetBinContent(acc_LA_e->GetXaxis()->FindBin(theta), acc_LA_e->GetYaxis()->FindBin(mom));
+  //if (theta > thetamin && theta < 8.0 && mom > 2.0) return 0.5; //this line should be deleted
+  return acc;
+}
 
 
 void analysis(std::string file_name="file_name"){
+  
   std::cout<<" Enter file name "<<std::endl;
   std::cin>>file_name;
+
 
   if(root_file_exists(file_name.c_str())){
 
@@ -62,8 +80,8 @@ void analysis(std::string file_name="file_name"){
     std::cout<<"raw counts"<<*d_raw.Count()<<std::endl;
     auto d_nocut = d_raw
     //.Define("theta_deg",,{"theta"})
-    .Define("hadron_P",hadron_momentum,{"px","py","pz"})
-    .Define("momentum","sqrt(hadron_P.Dot(hadron_P))")
+    .Define("particle_P",particle_momentum,{"px","py","pz"})
+    .Define("momentum","sqrt(particle_P.Dot(particle_P))")
     ;
     auto d_cut = d_nocut
     .Filter("W>2")

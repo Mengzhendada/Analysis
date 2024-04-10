@@ -39,13 +39,34 @@ bool root_file_exists(std::string rootfile) {
 }
 using Pvec3D = ROOT::Math::XYZVector;
 using Pvec4D = ROOT::Math::PxPyPzMVector;
-//auto p_particle = [](double px, double py, double pz) {
-//  return Pvec4D{px , py , pz , M_particle};
-//};
+const double M_particle = 0.00051;
+auto p_particle = [](double px, double py, double pz) {
+  //return Pvec4D{px , py , pz , M_particle};
+  double E = px*px+py*py+pz*pz+M_particle*M_particle;
+  return TLorentzVector{px,py,pz,E};
+};
 auto particle_momentum = [](double px,double py,double pz){
   TVector3 v(px,py,pz);
   return v;
 };
+TFile * file_e = new TFile("Acceptance/acceptance_solid_SIDIS_He3_electron_201701_1e7_output_final.root", "r");
+TH2F * acc_FA_e = (TH2F *) file_e->Get("acceptance_ThetaP_forwardangle");
+TH2F * acc_LA_e = (TH2F *) file_e->Get("acceptance_ThetaP_largeangle");
+double thetamin = 8.0;
+double GetAcceptance_e(const TLorentzVector p){//Get electron acceptance
+  double theta = p.Theta() / M_PI * 180.0;
+  if (theta < thetamin || theta > 30.0) return 0; //theta > 180
+  const char * detector = "all";
+  double mom = p.P();
+  double acc = 0;
+  if (strcmp(detector, "FA") == 0 || strcmp(detector, "all") == 0)
+    acc += acc_FA_e->GetBinContent(acc_FA_e->GetXaxis()->FindBin(theta), acc_FA_e->GetYaxis()->FindBin(mom));
+  if ( (strcmp(detector, "LA") == 0 || strcmp(detector, "all") == 0))
+  //if (mom > 3.5 && (strcmp(detector, "LA") == 0 || strcmp(detector, "all") == 0))
+    acc += acc_LA_e->GetBinContent(acc_LA_e->GetXaxis()->FindBin(theta), acc_LA_e->GetYaxis()->FindBin(mom));
+  //if (theta > thetamin && theta < 8.0 && mom > 2.0) return 0.5; //this line should be deleted
+  return acc;
+}
 
 
 void analysis_all(){
@@ -65,6 +86,9 @@ void analysis_all(){
     //std::cout<<"raw CJ15LO counts"<<*d_CJ15LO.Count()<<std::endl;
     auto d_cut_CT14NLO = d_CT14NLO
     //.Define("theta_deg",,{"theta"})
+    .Define("particle_4Vector",p_particle,{"px","py","pz"})
+    .Define("acc",GetAcceptance_e,{"particle_4Vector"})
+    .Define("acc_rate","acc*rate")
     .Define("particle_P",particle_momentum,{"px","py","pz"})
     .Define("momentum","sqrt(particle_P.Dot(particle_P))")
     .Filter("W>2")
@@ -72,6 +96,9 @@ void analysis_all(){
     ;
     auto d_cut_CT14LO = d_CT14LO
     //.Define("theta_deg",,{"theta"})
+    .Define("particle_4Vector",p_particle,{"px","py","pz"})
+    .Define("acc",GetAcceptance_e,{"particle_4Vector"})
+    .Define("acc_rate","acc*rate")
     .Define("particle_P",particle_momentum,{"px","py","pz"})
     .Define("momentum","sqrt(particle_P.Dot(particle_P))")
     .Filter("W>2")
@@ -79,6 +106,9 @@ void analysis_all(){
     ;
     auto d_cut_CT18NLO = d_CT18NLO
     //.Define("theta_deg",,{"theta"})
+    .Define("particle_4Vector",p_particle,{"px","py","pz"})
+    .Define("acc",GetAcceptance_e,{"particle_4Vector"})
+    .Define("acc_rate","acc*rate")
     .Define("particle_P",particle_momentum,{"px","py","pz"})
     .Define("momentum","sqrt(particle_P.Dot(particle_P))")
     .Filter("W>2")
@@ -86,6 +116,9 @@ void analysis_all(){
     ;
     auto d_cut_CT18LO = d_CT18LO
     //.Define("theta_deg",,{"theta"})
+    .Define("particle_4Vector",p_particle,{"px","py","pz"})
+    .Define("acc",GetAcceptance_e,{"particle_4Vector"})
+    .Define("acc_rate","acc*rate")
     .Define("particle_P",particle_momentum,{"px","py","pz"})
     .Define("momentum","sqrt(particle_P.Dot(particle_P))")
     .Filter("W>2")
@@ -93,6 +126,9 @@ void analysis_all(){
     ;
     auto d_cut_CJ15NLO = d_CJ15NLO
     //.Define("theta_deg",,{"theta"})
+    .Define("particle_4Vector",p_particle,{"px","py","pz"})
+    .Define("acc",GetAcceptance_e,{"particle_4Vector"})
+    .Define("acc_rate","acc*rate")
     .Define("particle_P",particle_momentum,{"px","py","pz"})
     .Define("momentum","sqrt(particle_P.Dot(particle_P))")
     .Filter("W>2")
@@ -100,11 +136,11 @@ void analysis_all(){
     ;
     //std::cout<<"counts after cuts"<<*d_cut.Count()<<std::endl;
     TH1D* h_theta_ave = new TH1D("","",100,0,30);
-    auto h_theta_CT14NLO = d_cut_CT14NLO.Histo1D({"CT14NLO","",100,0,30},"theta","rate");
-    auto h_theta_CT14LO = d_cut_CT14LO.Histo1D({"CT14LO","",100,0,30},"theta","rate");
-    auto h_theta_CT18NLO = d_cut_CT18NLO.Histo1D({"CT18NLO","",100,0,30},"theta","rate");
-    auto h_theta_CT18LO = d_cut_CT18LO.Histo1D({"CT18LO","",100,0,30},"theta","rate");
-    auto h_theta_CJ15NLO = d_cut_CJ15NLO.Histo1D({"CJ15NLO","",100,0,30},"theta","rate");
+    auto h_theta_CT14NLO = d_cut_CT14NLO.Histo1D({"CT14NLO","",100,0,30},"theta","acc_rate");
+    auto h_theta_CT14LO = d_cut_CT14LO.Histo1D({"CT14LO","",100,0,30},"theta","acc_rate");
+    auto h_theta_CT18NLO = d_cut_CT18NLO.Histo1D({"CT18NLO","",100,0,30},"theta","acc_rate");
+    auto h_theta_CT18LO = d_cut_CT18LO.Histo1D({"CT18LO","",100,0,30},"theta","acc_rate");
+    auto h_theta_CJ15NLO = d_cut_CJ15NLO.Histo1D({"CJ15NLO","",100,0,30},"theta","acc_rate");
     
     //std::cout<<" counts from histo" <<h_theta->Integral()<<std::endl;
     gStyle->SetOptTitle(0);
@@ -172,11 +208,11 @@ void analysis_all(){
     c_ratio->BuildLegend();
     c_ratio->SaveAs("theta_ratio.pdf");
 
-    auto h_momentum_CT14NLO = d_cut_CT14NLO.Histo1D({"CT14NLO","",100,0,10},"momentum","rate");
-    auto h_momentum_CT14LO = d_cut_CT14LO.Histo1D({"CT14LO","",100,0,10},"momentum","rate");
-    auto h_momentum_CT18NLO = d_cut_CT18NLO.Histo1D({"CT18NLO","",100,0,10},"momentum","rate");
-    auto h_momentum_CT18LO = d_cut_CT18LO.Histo1D({"CT18LO","",100,0,10},"momentum","rate");
-    auto h_momentum_CJ15NLO = d_cut_CJ15NLO.Histo1D({"CJ15NLO","",100,0,10},"momentum","rate");
+    auto h_momentum_CT14NLO = d_cut_CT14NLO.Histo1D({"CT14NLO","",100,0,10},"momentum","acc_rate");
+    auto h_momentum_CT14LO = d_cut_CT14LO.Histo1D({"CT14LO","",100,0,10},"momentum","acc_rate");
+    auto h_momentum_CT18NLO = d_cut_CT18NLO.Histo1D({"CT18NLO","",100,0,10},"momentum","acc_rate");
+    auto h_momentum_CT18LO = d_cut_CT18LO.Histo1D({"CT18LO","",100,0,10},"momentum","acc_rate");
+    auto h_momentum_CJ15NLO = d_cut_CJ15NLO.Histo1D({"CJ15NLO","",100,0,10},"momentum","acc_rate");
     //std::cout<<" counts from histo" <<h_momentum->Integral()<<std::endl;
     gStyle->SetOptTitle(0);
     gStyle->SetOptStat(0);

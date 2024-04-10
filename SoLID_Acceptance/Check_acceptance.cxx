@@ -42,9 +42,9 @@ void Check_acceptance(std::string file_name="file_name"){
 
   //std::cout<<" Enter file name "<<std::endl;
   //std::cin>>file_name;
-  //file_name = "acceptance_solid_SIDIS_He3_electron_201701_1e7_output_final";
+  file_name = "acceptance_solid_SIDIS_He3_electron_201701_1e7_output_final";
   //file_name = "acceptance_solid_SIDIS_He3_pim_201701_1e7_output_final";
-  file_name = "acceptance_solid_SIDIS_He3_pip_201701_1e7_output_final";
+  //file_name = "acceptance_solid_SIDIS_He3_pip_201701_1e7_output_final";
   //file_name = "acceptance_solid_SIDIS_He3_km_201701_1e7_output_final";
   //file_name = "acceptance_solid_SIDIS_He3_kp_201701_1e7_output_final";
   
@@ -71,6 +71,13 @@ void Check_acceptance(std::string file_name="file_name"){
     c_large->SetBottomMargin(0.2);
     h_large->Draw("colz");
     c_large->SaveAs("results/Acceptance_large.pdf");
+    TCanvas *c_large = new TCanvas("","",1200,1200);
+    gStyle->SetOptTitle(0);
+    c_large->SetLeftMargin(0.15);
+    c_large->SetBottomMargin(0.2);
+    h_large->Draw("colz");
+    h_forward->Draw("colz same");
+    c_large->SaveAs("results/Acceptance_all.pdf");
   }
 }
 

@@ -75,7 +75,7 @@ void Check_acceptance(std::string file_name="file_name"){
     gStyle->SetOptTitle(0);
     c_all->SetLeftMargin(0.15);
     c_all->SetBottomMargin(0.2);
-    h_all->Draw("colz");
+    h_large->Draw("colz");
     h_forward->Draw("colz same");
     c_all->SaveAs("results/Acceptance_all.pdf");
   }

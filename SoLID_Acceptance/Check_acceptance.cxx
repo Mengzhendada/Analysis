@@ -71,13 +71,13 @@ void Check_acceptance(std::string file_name="file_name"){
     c_large->SetBottomMargin(0.2);
     h_large->Draw("colz");
     c_large->SaveAs("results/Acceptance_large.pdf");
-    TCanvas *c_large = new TCanvas("","",1200,1200);
+    TCanvas *c_all = new TCanvas("","",1200,1200);
     gStyle->SetOptTitle(0);
-    c_large->SetLeftMargin(0.15);
-    c_large->SetBottomMargin(0.2);
-    h_large->Draw("colz");
+    c_all->SetLeftMargin(0.15);
+    c_all->SetBottomMargin(0.2);
+    h_all->Draw("colz");
     h_forward->Draw("colz same");
-    c_large->SaveAs("results/Acceptance_all.pdf");
+    c_all->SaveAs("results/Acceptance_all.pdf");
   }
 }
 
